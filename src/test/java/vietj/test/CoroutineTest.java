@@ -35,7 +35,7 @@ public class CoroutineTest {
   public void testAsyncHandler() throws Exception {
     TheTest test = new TheTest();
     CompletableFuture<String> result = new CompletableFuture<>();
-    test.testAsyncHandler(result::complete);
+    test.testAsyncResultHandler(result::complete);
     assertEquals("pong", result.get(10, TimeUnit.SECONDS));
   }
 

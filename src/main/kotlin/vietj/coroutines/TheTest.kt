@@ -10,22 +10,24 @@ class TheTest {
 
     fun testAsyncFuture(doneHandler: Handler<String>) {
         sync {
-            val vertx = Vertx.vertx();
+            val vertx = Vertx.vertx()
             val fut = Future.future<String>()
-            vertx.setTimer(50, Handler {
+            vertx.setTimer(50) {
                 fut.complete("the_value");
-            });
+            }
             val result = await(fut)
-            doneHandler.handle(result);
+            doneHandler.handle(result)
         }
     }
 
-    fun testAsyncHandler(doneHandler: Handler<String>) {
+    fun testAsyncResultHandler(doneHandler: Handler<String>) {
         val vertx = Vertx.vertx();
         vertx.eventBus().consumer<String>("the-address", { it.reply("pong") })
         sync {
-            val msg = await<Message<String>>({ vertx.eventBus().send("the-address", "ping", it) })
-            doneHandler.handle(msg.body());
+            val msg = await<Message<String>> {
+                vertx.eventBus().send("the-address", "ping", it)
+            }
+            doneHandler.handle(msg.body())
         }
     }
 
@@ -37,7 +39,7 @@ class TheTest {
                 if (next.isPresent) {
                     itemHandler.handle(next.get())
                 } else {
-                    break;
+                    break
                 }
             }
             doneHandler.handle(null)
@@ -47,9 +49,9 @@ class TheTest {
     fun readStreamWithBackPressure(stream: ReadStream<String>, resume: Future<Void>, itemHandler: Handler<String>, doneHandler: Handler<Void>) {
         sync {
             val seq = ReadStreamSequence(stream)
-            itemHandler.handle(next(seq).get());
-            itemHandler.handle(next(seq).get());
-            itemHandler.handle(next(seq).get());
+            itemHandler.handle(next(seq).get())
+            itemHandler.handle(next(seq).get())
+            itemHandler.handle(next(seq).get())
             await(resume);
             while (true) {
                 val next = next(seq)
