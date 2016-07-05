@@ -17,7 +17,6 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -25,11 +24,19 @@ import static org.junit.Assert.assertNull;
 public class CoroutineTest {
 
   @Test
-  public void testAsync() throws Exception {
+  public void testAsyncFuture() throws Exception {
     TheTest test = new TheTest();
     CompletableFuture<String> result = new CompletableFuture<>();
-    test.testAsync(result::complete);
+    test.testAsyncFuture(result::complete);
     assertEquals("the_value", result.get(10, TimeUnit.SECONDS));
+  }
+
+  @Test
+  public void testAsyncHandler() throws Exception {
+    TheTest test = new TheTest();
+    CompletableFuture<String> result = new CompletableFuture<>();
+    test.testAsyncHandler(result::complete);
+    assertEquals("pong", result.get(10, TimeUnit.SECONDS));
   }
 
   @Test

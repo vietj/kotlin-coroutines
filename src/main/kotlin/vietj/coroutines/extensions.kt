@@ -1,5 +1,6 @@
 package vietj.coroutines
 
+import io.vertx.core.AsyncResult
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.Future;
 import io.vertx.core.Handler
@@ -85,9 +86,9 @@ class VertxController {
         })
     }
 
-    suspend fun <T> await(f: (Future<T>) -> Unit, c: Continuation<T>) {
+    suspend fun <T> await(f: (Handler<AsyncResult<T>>) -> Unit, c: Continuation<T>) {
         val fut = Future.future<T>()
-        f(fut);
+        f(fut.completer());
         await(fut, c);
     }
 }

@@ -3,11 +3,12 @@ package vietj.coroutines
 import io.vertx.core.Future
 import io.vertx.core.Handler
 import io.vertx.core.Vertx
+import io.vertx.core.eventbus.Message
 import io.vertx.core.streams.ReadStream
 
 class TheTest {
 
-    fun testAsync(doneHandler: Handler<String>) {
+    fun testAsyncFuture(doneHandler: Handler<String>) {
         sync {
             val vertx = Vertx.vertx();
             val fut = Future.future<String>()
@@ -16,6 +17,15 @@ class TheTest {
             });
             val result = await(fut)
             doneHandler.handle(result);
+        }
+    }
+
+    fun testAsyncHandler(doneHandler: Handler<String>) {
+        val vertx = Vertx.vertx();
+        vertx.eventBus().consumer<String>("the-address", { it.reply("pong") })
+        sync {
+            val msg = await<Message<String>>({ vertx.eventBus().send("the-address", "ping", it) })
+            doneHandler.handle(msg.body());
         }
     }
 
